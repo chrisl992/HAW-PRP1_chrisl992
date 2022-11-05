@@ -60,6 +60,7 @@ int main(void)
 		int zahl;
 		bool doppelt = false;
 		do {
+			doppelt = false;
 			zahl = rand() % 49;
 
 			for (int j = 0; j < i; j++) {
