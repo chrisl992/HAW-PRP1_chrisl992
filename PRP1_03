@@ -1,0 +1,107 @@
+//PRP1_Praktikum03
+//Lottoschein
+//Chris Lucas Siewert
+//2022.11.05
+//Version 0.1 Beta
+
+#define _CRT_SECURE_NO_WARNINGS
+
+#include <stdio.h>
+#include <stdbool.h>
+#include <stdlib.h>
+
+
+
+short getShort(			// [out] user input
+	char text[], int min, int max)		// [in] question text for user input
+{
+	short value;		// user input
+	int finished = 0;	// flag for correct user input
+	char ch;			// character behind number
+	int retVal;			// return value of scanf
+	do {
+						// get user input
+		printf("%s: ", text);
+		ch = '\0';
+		retVal = scanf("%hd%c", &value, &ch);
+						// check for valid user input
+
+		if (retVal != 2) printf("Das war keine korrekte Zahl!\n");
+		else if (ch != '\n') printf("Unerwartete Zeichen hinter der Zahl!\n");
+		else if (value<min || value>max) printf("Wert ausserhalb des erlaubten Berreiches!\n");
+			else finished = 1;
+						// clear input stream
+
+		while (ch != '\n') scanf("%c", &ch);
+						// repeat if not finished
+
+	} while (!finished);
+						// return user input
+
+	return value;
+}
+
+
+int main(void)
+{
+
+	int tipp[6];
+	int gezogen[6];
+
+	tipp[0] = getShort("Geben sie ihren 1. Tipp ein", 1, 49);
+	tipp[1] = getShort("Geben sie ihren 2. Tipp ein", 1, 49);
+	tipp[2] = getShort("Geben sie ihren 3. Tipp ein", 1, 49);
+	tipp[3] = getShort("Geben sie ihren 4. Tipp ein", 1, 49);
+	tipp[4] = getShort("Geben sie ihren 5. Tipp ein", 1, 49);
+	tipp[5] = getShort("Geben sie ihren 6. Tipp ein", 1, 49);
+
+
+	for (int i = 0; i < 6; i++) {
+		int zahl;
+		bool doppelt = false;
+		do {
+			zahl = rand() % 49;
+
+			for (int j = 0; j < i; j++) {
+				if (gezogen[j] == zahl) {
+					doppelt = true;
+					break;
+				}
+			}
+		} while (doppelt);
+		gezogen[i] = zahl;
+	}
+
+	printf("\nDie zahlen sind: %i, %i, %i, %i, %i, %i \n",gezogen[0], gezogen[1], gezogen[2], gezogen[3], gezogen[4], gezogen[5]);
+
+	int richtige = 0;
+
+	for (int i = 0; i < 6; i++) {
+		for (int j = 0; j < 6; j++) {
+			if (tipp[i] == gezogen[j]) {
+				richtige++;
+				break;
+			}
+		}
+	}
+
+	printf("\nSie haben %i richtige", richtige);
+
+	if (richtige == 2) {
+		printf("Sie haben 5€ gewonnen");
+	}
+	else if (richtige == 3) {
+		printf("Sie haben 50€ gewonnen");
+	}
+	else if (richtige == 4) {
+		printf("Sie haben 1000€ gewonnen");
+	}
+	else if (richtige == 5) {
+		printf("Sie haben 50,000€ gewonnen");
+	}
+	else if (richtige == 6) {
+		printf("Sie haben 1,000,000€ gewonnen");
+	}
+
+	return 0;
+}
