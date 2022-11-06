@@ -2,13 +2,13 @@
 //Lottoschein
 //Chris Lucas Siewert
 //2022.11.05
-//Version 0.1 Beta
+//Version 0.3 Beta
 
 #define _CRT_SECURE_NO_WARNINGS
 
 #include <stdio.h>
-#include <stdbool.h>
-#include <stdlib.h>
+#include <stdbool.h>	//boolean
+#include <stdlib.h>     //srand, rand
 
 
 
@@ -19,6 +19,7 @@ short getShort(			// [out] user input
 	int finished = 0;	// flag for correct user input
 	char ch;			// character behind number
 	int retVal;			// return value of scanf
+
 	do {
 						// get user input
 		printf("%s: ", text);
@@ -48,6 +49,9 @@ int main(void)
 	int tipp[6];
 	int gezogen[6];
 
+	printf("Lotto 6 aus 49!\nWaehlen sie ihre 6 Lottozahlen.\n");
+	printf("Bestaetigen sie ihre Zahlen mit der Entertaste.\n");
+
 	tipp[0] = getShort("Geben sie ihren 1. Tipp ein", 1, 49);
 	tipp[1] = getShort("Geben sie ihren 2. Tipp ein", 1, 49);
 	tipp[2] = getShort("Geben sie ihren 3. Tipp ein", 1, 49);
@@ -59,9 +63,11 @@ int main(void)
 	for (int i = 0; i < 6; i++) {
 		int zahl;
 		bool doppelt = false;
+		srand(time(NULL));
 		do {
 			doppelt = false;
-			zahl = rand() % 49;
+			zahl = rand() % 49 + 1;
+			
 
 			for (int j = 0; j < i; j++) {
 				if (gezogen[j] == zahl) {
@@ -86,22 +92,22 @@ int main(void)
 		}
 	}
 
-	printf("\nSie haben %i richtige", richtige);
+	printf("\nSie haben %i richtige Zahlen\n", richtige);
 
 	if (richtige == 2) {
-		printf("Sie haben 5€ gewonnen");
+		printf("Sie haben 5 Euro gewonnen");
 	}
 	else if (richtige == 3) {
-		printf("Sie haben 50€ gewonnen");
+		printf("Sie haben 50 Euro gewonnen");
 	}
 	else if (richtige == 4) {
-		printf("Sie haben 1000€ gewonnen");
+		printf("Sie haben 1000 Euro gewonnen");
 	}
 	else if (richtige == 5) {
-		printf("Sie haben 50,000€ gewonnen");
+		printf("Sie haben 50,000 Euro gewonnen");
 	}
 	else if (richtige == 6) {
-		printf("Sie haben 1,000,000€ gewonnen");
+		printf("JACKPOT!!! Sie haben 1,000,000 Euro gewonnen!");
 	}
 
 	return 0;
