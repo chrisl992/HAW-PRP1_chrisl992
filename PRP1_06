@@ -11,10 +11,13 @@
 
 //Standardeinstellung : Anti-Warnung von scanf
 #define _CRT_SECURE_NO_WARNINGS 
-
+#define AUFGABE 1					//HIER ZAHL ÄNDERN FÜR WELCHE AUFGABE AUFGERUFEN WERDEN SOLL!!
+									// 1 = Aufgabe 1, 2 = Aufgabe 2, 3 = Aufgabe 3
 
 //Auswertung der Kommandozeilenparameter (III)
 #include <stdio.h>
+
+#if AUFGABE == 3
 
 //Aufgabe 3 (Funktion)
 int* find_int(int gesucht, int intArray[], int arrayLength) {
@@ -22,7 +25,7 @@ int* find_int(int gesucht, int intArray[], int arrayLength) {
 
 	for (int i = 0; i < arrayLength; i++) {		//Loop für Array
 		if (gesucht == intArray[i]) {			//Gesuchte zahl aus array wird gefunden
-			printf("%d", i);					//Ausgabe position im array
+			printf("%d", i);					//Ausgabe position im array --> ABER WIE BERECHNEN!!!!!!!!!!!!!!!!!!!!!!
 
 			if (NULL == gesuchtPointer) {			//Falls noch kein vorkommendes gefunden
 				gesuchtPointer = intArray[i];		//Pointer für erste vorkommen setzten
@@ -31,6 +34,9 @@ int* find_int(int gesucht, int intArray[], int arrayLength) {
 	}
 	return gesuchtPointer;
 }
+
+#endif // AUFGABE == 3
+
 //Aufgabe 2 (Funktion)
 void encrypt(FILE* readPointer, FILE* writePointer, int verschiebung) {
 	char curChar;		//curChar -> Current char
@@ -56,6 +62,7 @@ void encrypt(FILE* readPointer, FILE* writePointer, int verschiebung) {
 }
 void main(int argc, char* argv[])
 {
+#if AUFGABE == 1
 
 	//INTRO - Aufgabe 1
 	printf("_______________________________________________________\n\n");
@@ -72,6 +79,10 @@ void main(int argc, char* argv[])
 	}
 
 
+#endif // AUFGABE == 1
+
+	
+#if AUFGABE == 2
 
 	//INTRO - Aufgabe 2
 	printf("_______________________________________________________\n\n");
@@ -116,5 +127,7 @@ void main(int argc, char* argv[])
 	// Closing the file
 	fclose(readPointer);
 	fclose(writePointer);
+#endif // AUFGABE == 2
+
 	return 0;
 }
