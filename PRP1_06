@@ -1,8 +1,11 @@
+//_______________________________________________________
+//
+// Thema : Kommandozeilenparameter, Dateien & Zeiger
 // Praktikumsaufgabe : 6
 // Professor : Kolja Eger
 // Abgabeversion : 1
 // Datum : 18.12.22
-// Author : Chris Luvas Siewert
+// Author : Chris Lucas Siewert
 // start.txt , verschiebung.txt
 //_______________________________________________________
 
@@ -33,7 +36,7 @@ void encrypt(FILE* readPointer, FILE* writePointer, int verschiebung) {
 	char curChar;		//curChar -> Current char
 
 	do {
-		curChar = toupper(fgetc(readPointer));		//Umwandeln in großbuchstaben
+		curChar = toupper(fgetc(readPointer));		//Umwandeln in großbuchstaben  ||  fgetc = Flile get char
 
 		if (curChar != EOF) {						//End of field = sind noch zeichen über
 			if ((int)curChar < 65 || (int)curChar > 90) {		//Ausnahme für Sonderzeichen
@@ -65,7 +68,7 @@ void main(int argc, char* argv[])
 	for (i = 0; i < argc; i++)
 	{
 		printf("%d. parameter: \"%s\" \n", i, argv[i]); //   [ \" ] -> Formatierung der Gänsefüßchen für die Parameter
-		printf("\n");									//argv -> Array der Parameter
+		printf("\n");									//argv -> Array der Parameter -> Parameter werden ausgegeben
 	}
 
 
@@ -89,7 +92,7 @@ void main(int argc, char* argv[])
 
 	FILE* readPointer;		//Pointer zum auslesen der datei die in Parameter übergeben wird
 	FILE* writePointer;		//Pointer zum ausgeben der datei die in Parameter übergeben wird
-	char curChar;
+	char curChar;			//Zeichen auf dem wir stehen
 
 	// Opening file in reading/write mode
 	readPointer = fopen(argv[1], "r");
@@ -99,7 +102,7 @@ void main(int argc, char* argv[])
 	if (NULL == readPointer) {
 		printf("file can't be opened \n");
 	}
-	if (atoi(argv[3]) < 1 || atoi(argv[3] > 25)) {
+	if (atoi(argv[3]) < 1 || atoi(argv[3] > 25)) {		//atoi = String aus Parameter zu Int
 		printf("Verschiebung außerhalb des gültigen Bereiches \n");
 	}
 
