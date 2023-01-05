@@ -12,7 +12,7 @@
 //Standardeinstellung : Anti-Warnung von scanf
 #define _CRT_SECURE_NO_WARNINGS 
 
-#define AUFGABE 1		//HIER ZAHL ÄNDERN FÜR WELCHE AUFGABE AUFGERUFEN WERDEN SOLL!! 1 = Aufgabe 1, 2 = Aufgabe 2, 3 = Aufgabe 3
+#define AUFGABE 3		//HIER ZAHL ÄNDERN FÜR WELCHE AUFGABE AUFGERUFEN WERDEN SOLL!! 1 = Aufgabe 1, 2 = Aufgabe 2, 3 = Aufgabe 3
 
 //INCLUDES/BIBLIOTHEK
 //Auswertung der Kommandozeilenparameter (III)
@@ -24,11 +24,11 @@
 
 //Aufgabe 3 (Funktion)
 int* find_int(int gesucht, int intArray[], int arrayLength) {
-	int* gesuchtPointer;			//Definition Pointer
+	int* gesuchtPointer = NULL;			//Definition Pointer
 
 	for (int i = 0; i < arrayLength; i++) {		//Loop für Array
 		if (gesucht == intArray[i]) {			//Gesuchte zahl aus array wird gefunden
-			printf("%d", i);					//Ausgabe position im array --> ABER WIE BERECHNEN!!!!!!!!!!!!!!!!!!!!!!
+			printf("%d ", i);					//Ausgabe position (("%d ", i) für Position (("%p\n" &intArray[i]) für Adresse) im array 
 
 			if (NULL == gesuchtPointer) {			//Falls noch kein vorkommendes gefunden
 				gesuchtPointer = intArray[i];		//Pointer für erste vorkommen setzten
@@ -144,8 +144,18 @@ void main(int argc, char* argv[]) //Hauptprogramm hat keinen Rückgabewert
 	// Closing the file
 	fclose(readPointer);
 	fclose(writePointer);
+
+
 #endif // AUFGABE == 2
 
+#if AUFGABE == 3
+	int gesucht = 3;
+	int arrayLength = 5;
+
+	int intArray[5] = { 1, 2, 3, 3, 1 };
+
+	find_int(gesucht, intArray, arrayLength);
+#endif 
 
 	/*
 	
