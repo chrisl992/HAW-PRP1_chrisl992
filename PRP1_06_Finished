@@ -3,8 +3,8 @@
 // Thema : Kommandozeilenparameter, Dateien & Zeiger
 // Praktikumsaufgabe : 6
 // Professor : Kolja Eger
-// Abgabeversion : 1
-// Datum : 02.01.23
+// Version : 6.5.2
+// Datum : 11.01.23
 // Author : Chris Lucas Siewert & Mariam Ahmadi
 // Notwendige Dateien: start.txt (Mit Inhalt) , verschiebung.txt (Ohne Inhalt)
 //_______________________________________________________
@@ -26,15 +26,20 @@
 
 //Aufgabe 3 (Funktion)
 int* find_int(int value, int* vec, int length) {
+	int* gesuchtPointer = NULL;
 	for (int i = 0; i < length; i++) {
 		if (isdigit(vec[i]) || isalpha(vec[i])) {		//Prüfen nach Char Zahl und Char Alphabet
 			return NULL;
 		}
+		
 		if (vec[i] == value) {
-			return &vec[i];
+			if (NULL == gesuchtPointer) {			//Falls noch kein vorkommendes gefunden
+				gesuchtPointer = vec[i];		//Pointer für erste vorkommen setzten
+			}
+			printf("Gefunden an Stelle %d: %p \n",i, &vec[i]);					//Ausgabe position (("%d ", i) für Position (("%p\n" &intArray[i]) für Adresse) im array 
 		}
 	}
-	return NULL;
+	return gesuchtPointer;
 }
 
 #endif // AUFGABE == 3
@@ -45,7 +50,7 @@ void encrypt(FILE* readPointer, FILE* writePointer, int verschiebung)
 	char curChar;		//curChar -> Aktueller Buchstabe
 
 	do {
-		curChar = toupper(fgetc(readPointer));		//Umwandeln in großbuchstaben  ||  fgetc = Flile get char
+		curChar = toupper(fgetc(readPointer));		//Umwandeln in großbuchstaben  |  fgetc = Flile get char
 
 		if (curChar != EOF) {						//End of field = sind noch zeichen über
 
@@ -145,10 +150,10 @@ void main(int argc, char* argv[]) //Hauptprogramm hat keinen Rückgabewert
 	fclose(writePointer);
 
 
-#endif // AUFGABE == 2
+	#endif // AUFGABE == 2
 
-#if AUFGABE == 3
-	int vec[] = { 3, 1, 3, 1, 5};
+	#if AUFGABE == 3
+	int vec[] = { 3, 1, 3, 1, 5 };
 	int value = 1;
 	int* found = find_int(value, vec, 5);
 	if (found != NULL) {
@@ -158,36 +163,7 @@ void main(int argc, char* argv[]) //Hauptprogramm hat keinen Rückgabewert
 		printf("Der Wert %d wurde nicht gefunden\n", value);
 	}
 	return 0;
-}
 
-#endif 
-
-
-	/*
-	#if AUFGABE == 3
-	int gesucht = 3;
-	int arrayLength = 5;
-
-	int intArray[5] = { 1, 2, 3, 3, 1 };
-
-	find_int(gesucht, intArray, arrayLength);
-#endif 
+	#endif 
+}	
 	
-	*/
-
-
-
-
-
-	/*
-	
-	
-	//Ende der Aufgabe 3 (Ausruf in der Main)
-	int intArray[5] = { 1, 2, 3, 1, 1 };
-	printf("Bitte geben Sie eine ganze Zahl zwischen 1 und 3 aus.");
-	scanf("%p", &intArray);
-	while (getchar() != '\n');
-	printf("Die Zahl lautet: %p\n", &intArray);
-	return;
-	
-	*/
