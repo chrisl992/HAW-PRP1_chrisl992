@@ -1,0 +1,63 @@
+//_______________________________________________________
+//
+// Thema : Notendurchschnitt
+// Praktikumsaufgabe : 7
+// Professor : Kolja Eger
+// Version : 0.1 Beta
+// Datum : 16.01.2023
+// Author : Chris Lucas Siewert & Mariam Ahmadi
+// Notwendige Dateien: module.csv, seperated values
+//_______________________________________________________
+
+//Standardeinstellung : Anti-Warnung von scanf
+#define _CRT_SECURE_NO_WARNINGS 
+
+//INCLUDES/BIBLIOTHEK
+//Auswertung der Kommandozeilenparameter (III)
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <string.h>
+#include <math.h>
+
+
+struct Module
+{
+	char Bezeichnung[64];
+	char Abkürzung[4];
+	int Gewichtung;
+	int Note;
+
+
+
+};
+
+void main() {
+
+	struct Module* Miep = malloc(sizeof(struct Module));		//Es war spät ok :/
+	char zeile[CHAR_MAX];
+	FILE* readPointer;
+
+
+	readPointer = fopen("module.csv", "r");
+	while (!feof(readPointer))
+	{
+		fgets(zeile, CHAR_MAX, readPointer);
+		struct Module readModule;
+		char* token;
+		token = strtok(zeile, ";");
+		strcpy(readModule.Bezeichnung, token);
+		token = strtok(NULL, ";");
+		strcpy(readModule.Abkürzung, token);
+		token = strtok(NULL, ";");
+		readModule.Gewichtung = token;
+		token = strtok(NULL, ";");
+		readModule.Note = token;
+
+		*(Miep + (sizeof(Miep) / sizeof(struct Module))) = readModule;
+	}
+	for (int i = 0; i < (sizeof(Miep) / sizeof(struct Module)); i++) {
+		printf("%c", Miep[i].Bezeichnung);
+	}
+	
+}
