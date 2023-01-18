@@ -1,9 +1,10 @@
+
 //_______________________________________________________
 //
 // Thema : Notendurchschnitt
 // Praktikumsaufgabe : 7
 // Professor : Kolja Eger
-// Version : 0.1 Beta
+// Version : 0.5 Beta
 // Datum : 16.01.2023
 // Author : Chris Lucas Siewert & Mariam Ahmadi
 // Notwendige Dateien: module.csv, seperated values
@@ -20,6 +21,8 @@
 #include <string.h>
 #include <math.h>
 
+#include <sys/stat.h>
+#include <stdbool.h>
 
 struct Module
 {
@@ -27,19 +30,57 @@ struct Module
 	char Abkürzung[4];
 	int Gewichtung;
 	int Note;
-
-
-
 };
 
-void main() {
+short getShortMinMax(			// [out] user input
+	char text[],		// [in] question text for user input
+	short Min, short Max)	// [in] min & max values in which user input should be (incl min & max)
+{
+	short value;		// user input
+	int finished = 0;		// flag for correct user input
+	char ch;			// character behind number
+	int retVal;			// return value of scanf
 
-	struct Module* Miep = malloc(sizeof(struct Module));		//Es war spät ok :/
+	do {
+		finished = 0;	// set flag incorrect
+		// get user input
+		printf("%s: ", text);
+		ch = '\0';
+		retVal = scanf("%hd%c", &value, &ch);
+
+		// check for valid user input
+		if (retVal != 2) printf("Das war keine korrekte Zahl!\n");
+		else if (ch != '\n') printf("Unerwartete Zeichen hinter der Zahl!\n");
+		// check if in [Min, Max]
+		else if (!(value >= Min && value <= Max)) printf("Zahl nicht zwischen %d und %d\n", Min, Max);
+		else finished = 1;
+
+		// clear input stream
+		while (ch != '\n') retVal = scanf("%c", &ch);
+
+		// repeat if not finished
+	} while (!finished);
+
+	// return user input
+	return value;
+}
+
+int main() {
+	int count = 0;
+
+	struct Module *Miep = malloc(sizeof(struct Module)*5);
 	char zeile[CHAR_MAX];
 	FILE* readPointer;
 
-
 	readPointer = fopen("module.csv", "r");
+
+	if (readPointer == NULL)
+	{
+		printf("Fehler beim öffnen von module.csv");
+		return 1;
+	}
+	fgets(zeile, CHAR_MAX, readPointer);//Überschrift überspringen
+
 	while (!feof(readPointer))
 	{
 		fgets(zeile, CHAR_MAX, readPointer);
@@ -50,14 +91,74 @@ void main() {
 		token = strtok(NULL, ";");
 		strcpy(readModule.Abkürzung, token);
 		token = strtok(NULL, ";");
-		readModule.Gewichtung = token;
+		readModule.Gewichtung = atoi(token);
 		token = strtok(NULL, ";");
-		readModule.Note = token;
+		readModule.Note = atoi(token);
 
-		*(Miep + (sizeof(Miep) / sizeof(struct Module))) = readModule;
+		struct Module* Miep2;
+		Miep = realloc(Miep, sizeof(*Miep)*(count+1));
+		Miep[count] = readModule;
+		//printf("%s, Abkuerzung %s, Note: %d, Gewichtung: %d \n", readModule.Bezeichnung, readModule.Abkürzung, readModule.Note, readModule.Gewichtung);
+
+		count++;
 	}
-	for (int i = 0; i < (sizeof(Miep) / sizeof(struct Module)); i++) {
-		printf("%c", Miep[i].Bezeichnung);
+	fclose(readPointer);
+	int notensumme = 0;
+	int notenGewichtung = 0;
+	FILE* writePointer = fopen("output.csv", "w");
+	fputs("Modul;Kuerzel;Gewichtung;Note\n", writePointer);
+	for (int i = 0; i < count; i++) {
+		Miep[i].Note = getShortMinMax(Miep[i].Bezeichnung, 0, 15);
+		notensumme += Miep[i].Note;
+		printf("test1: %i\n", Miep[i].Gewichtung);
+		notenGewichtung = notenGewichtung + (Miep[i].Gewichtung * Miep[i].Note);
+		printf("test2: %i\n", Miep[i].Gewichtung);
+		//printf("gewichtung %i, note %i, mal %i, gewichtungSumme %i \n", Miep[i].Gewichtung, Miep[i].Note, Miep[i].Gewichtung * Miep[i].Note,notenGewichtung);
+		fputs(strcat(Miep[i].Bezeichnung,";"), writePointer);
+		printf("test3: %i\n", Miep[i].Gewichtung);
+		fputs(strcat(Miep[i].Abkürzung,";"), writePointer);
+		printf("test4: %i\n", Miep[i].Gewichtung);
+		char tmp[40];
+		printf("test5: %i\n", Miep[i].Gewichtung);
+		sprintf(tmp, "%i", Miep[i].Gewichtung);
+		printf("test6: %i ; %s", Miep[i].Gewichtung, tmp);
+		fputs(strcat(tmp,";"), writePointer);
+		sprintf(tmp, "%i", Miep[i].Note);
+		fputs(strcat(tmp, ";"), writePointer);
+		fputs("\n", writePointer);
 	}
-	
+
+	fclose(writePointer);
+
+	for (int i = 0; i < count; i++) {
+		printf("%s, Abkuerzung %s, Note: %d, Gewichtung: %d \n", Miep[i].Bezeichnung, Miep[i].Abkürzung, Miep[i].Note, Miep[i].Gewichtung);
+	}
+
+	float abschlussnote = (float)notenGewichtung / (float)notensumme;
+	char* notentext;
+	if (abschlussnote == 15)
+	{
+		notentext = "ausgezeichnet";
+	}
+	else if (abschlussnote == 14 || abschlussnote == 13) {
+		notentext = "sehr gut";
+	}
+	else if (abschlussnote < 13 && abschlussnote > 9)
+	{
+		notentext = "gut";
+	}
+	else if (abschlussnote < 10 && abschlussnote > 6)
+	{
+		notentext = "befriedigend";
+	}
+	else if (abschlussnote < 7 && abschlussnote > 4)
+	{
+		notentext = "ausreichend";
+	}
+	else 
+	{
+		notentext = "nicht ausreichend";
+	}
+	printf("\n\nNotensumme: %i Abschlussnote: %.3f %s",notensumme,abschlussnote,notentext);
+	return 0;
 }
