@@ -4,7 +4,7 @@
 // Thema : Notendurchschnitt
 // Praktikumsaufgabe : 7
 // Professor : Kolja Eger
-// Version : 0.5 Beta
+// Version : 0.6.3 Beta
 // Datum : 16.01.2023
 // Author : Chris Lucas Siewert & Mariam Ahmadi
 // Notwendige Dateien: module.csv, seperated values
@@ -33,11 +33,11 @@ struct Module
 };
 
 short getShortMinMax(			// [out] user input
-	char text[],		// [in] question text for user input
-	short Min, short Max)	// [in] min & max values in which user input should be (incl min & max)
+	char text[],				// [in] question text for user input
+	short Min, short Max)		// [in] min & max values in which user input should be (incl min & max)
 {
 	short value;		// user input
-	int finished = 0;		// flag for correct user input
+	int finished = 0;	// flag for correct user input
 	char ch;			// character behind number
 	int retVal;			// return value of scanf
 
@@ -65,29 +65,29 @@ short getShortMinMax(			// [out] user input
 	return value;
 }
 
-int main() {
+int main() {						//The Main
 	int count = 0;
 
-	struct Module *Miep = malloc(sizeof(struct Module)*5);
+	struct Module* Kurs = malloc(sizeof(struct Module) * 5);			//Struct created, Pointer made and Allocates Storrage for Dataset
 	char zeile[CHAR_MAX];
-	FILE* readPointer;
+	FILE* readPointer;			//File module.csv is opend
 
-	readPointer = fopen("module.csv", "r");
+	readPointer = fopen("module.csv", "r");		//Reading module.csv File
 
-	if (readPointer == NULL)
+	if (readPointer == NULL)			//Error Message if file not accesible
 	{
-		printf("Fehler beim öffnen von module.csv");
+		printf("Fehler beim oeffnen von module.csv");
 		return 1;
 	}
-	fgets(zeile, CHAR_MAX, readPointer);//Überschrift überspringen
+	fgets(zeile, CHAR_MAX, readPointer);	//Überschrift überspringen
 
 	while (!feof(readPointer))
 	{
 		fgets(zeile, CHAR_MAX, readPointer);
-		struct Module readModule;
-		char* token;
-		token = strtok(zeile, ";");
-		strcpy(readModule.Bezeichnung, token);
+		struct Module readModule;				//Defining readModule
+		char* token;							//Parts of string are Broken down into Tokens
+		token = strtok(zeile, ";");				//Using the broken down tokens of string 
+		strcpy(readModule.Bezeichnung, token);	//strcpy = String Copy, Copying the part of string and making it into a token
 		token = strtok(NULL, ";");
 		strcpy(readModule.Abkürzung, token);
 		token = strtok(NULL, ";");
@@ -95,48 +95,48 @@ int main() {
 		token = strtok(NULL, ";");
 		readModule.Note = atoi(token);
 
-		struct Module* Miep2;
-		Miep = realloc(Miep, sizeof(*Miep)*(count+1));
-		Miep[count] = readModule;
+		struct Module* Kursliste;
+		Kurs = realloc(Kurs, sizeof(*Kurs) * (count + 1));
+		Kurs[count] = readModule;
 		//printf("%s, Abkuerzung %s, Note: %d, Gewichtung: %d \n", readModule.Bezeichnung, readModule.Abkürzung, readModule.Note, readModule.Gewichtung);
 
 		count++;
 	}
 	fclose(readPointer);
-	int notensumme = 0;
-	int notenGewichtung = 0;
+	int notensumme = 0;					//Declaring new Int for Summ of grades
+	int notenGewichtung = 0;			//Declaring new Int for weight of grades
 	FILE* writePointer = fopen("output.csv", "w");
 	fputs("Modul;Kuerzel;Gewichtung;Note\n", writePointer);
 	for (int i = 0; i < count; i++) {
-		Miep[i].Note = getShortMinMax(Miep[i].Bezeichnung, 0, 15);
-		notensumme += Miep[i].Note;
-		printf("test1: %i\n", Miep[i].Gewichtung);
-		notenGewichtung = notenGewichtung + (Miep[i].Gewichtung * Miep[i].Note);
-		printf("test2: %i\n", Miep[i].Gewichtung);
+		Kurs[i].Note = getShortMinMax(Kurs[i].Bezeichnung, 0, 15);
+		notensumme += Kurs[i].Note;
+		//printf("test1: %i\n", Miep[i].Gewichtung);
+		notenGewichtung = notenGewichtung + (Kurs[i].Gewichtung * Kurs[i].Note);		//Function to calculate grade by weight
+		//printf("test2: %i\n", Miep[i].Gewichtung);
 		//printf("gewichtung %i, note %i, mal %i, gewichtungSumme %i \n", Miep[i].Gewichtung, Miep[i].Note, Miep[i].Gewichtung * Miep[i].Note,notenGewichtung);
-		fputs(strcat(Miep[i].Bezeichnung,";"), writePointer);
-		printf("test3: %i\n", Miep[i].Gewichtung);
-		fputs(strcat(Miep[i].Abkürzung,";"), writePointer);
-		printf("test4: %i\n", Miep[i].Gewichtung);
+		fputs(strcat(Kurs[i].Bezeichnung, ";"), writePointer);		//Writing name into file
+		//printf("test3: %i\n", Miep[i].Gewichtung);
+		fputs(strcat(Kurs[i].Abkürzung, ";"), writePointer);		//Writing shortcut into file
+		//printf("test4: %i\n", Miep[i].Gewichtung);
 		char tmp[40];
-		printf("test5: %i\n", Miep[i].Gewichtung);
-		sprintf(tmp, "%i", Miep[i].Gewichtung);
-		printf("test6: %i ; %s", Miep[i].Gewichtung, tmp);
-		fputs(strcat(tmp,";"), writePointer);
-		sprintf(tmp, "%i", Miep[i].Note);
+		//printf("test5: %i\n", Miep[i].Gewichtung);
+		sprintf(tmp, "%i", Kurs[i].Gewichtung);						//
+		//printf("test6: %i ; %s", Miep[i].Gewichtung, tmp);
+		fputs(strcat(tmp, ";"), writePointer);
+		sprintf(tmp, "%i", Kurs[i].Note);
 		fputs(strcat(tmp, ";"), writePointer);
 		fputs("\n", writePointer);
 	}
 
 	fclose(writePointer);
 
-	for (int i = 0; i < count; i++) {
-		printf("%s, Abkuerzung %s, Note: %d, Gewichtung: %d \n", Miep[i].Bezeichnung, Miep[i].Abkürzung, Miep[i].Note, Miep[i].Gewichtung);
+	for (int i = 0; i < count; i++) {		//Printing Results
+		printf("%s, Abkuerzung %s, Note: %d, Gewichtung: %d \n", Kurs[i].Bezeichnung, Kurs[i].Abkürzung, Kurs[i].Note, Kurs[i].Gewichtung);
 	}
 
-	float abschlussnote = (float)notenGewichtung / (float)notensumme;
+	float abschlussnote = (float)notenGewichtung / (float)notensumme;	
 	char* notentext;
-	if (abschlussnote == 15)
+	if (abschlussnote == 15)		//Printing how good you are
 	{
 		notentext = "ausgezeichnet";
 	}
@@ -155,10 +155,10 @@ int main() {
 	{
 		notentext = "ausreichend";
 	}
-	else 
+	else
 	{
 		notentext = "nicht ausreichend";
 	}
-	printf("\n\nNotensumme: %i Abschlussnote: %.3f %s",notensumme,abschlussnote,notentext);
+	printf("\n\nNotensumme: %i Abschlussnote: %.3f %s", notensumme, abschlussnote, notentext);
 	return 0;
 }
