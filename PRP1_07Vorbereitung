@@ -1,0 +1,175 @@
+//PRP1_07
+//Chris Lucas Siewert
+//12.03.2023
+//Beta 01
+
+#define _CRT_SECURE_NO_WARNINGS
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <string.h>
+//#include "getFunc.h"
+
+struct Fach
+{
+	char Modulbezeichnung[50];
+	char Abkuerzung[5];
+	int gewichtung;
+	int note;
+};
+
+void drucken(struct Fach* faecher, int count) 
+{
+	
+	for (int i = 0; i < count; i++)
+	{
+		printf("%s; %s; %d; %d\n", faecher[i].Modulbezeichnung, faecher[i].Abkuerzung, faecher[i].gewichtung, faecher[i].note);
+	}
+}
+
+short getShortMinMax(            // [out] user input
+	char text[],                // [in] question text for user input
+	short Min, short Max)        // [in] min & max values in which user input should be (incl min & max)
+{
+	short value;        // user input
+	int finished = 0;    // flag for correct user input
+	char ch;            // character behind number
+	int retVal;            // return value of scanf
+
+	do {
+		finished = 0;    // set flag incorrect
+		// get user input
+		printf("%s: ", text);
+		ch = '\0';
+		retVal = scanf("%hd%c", &value, &ch);
+
+		// check for valid user input
+		if (retVal != 2) printf("Das war keine korrekte Zahl!\n");
+		else if (ch != '\n') printf("Unerwartete Zeichen hinter der Zahl!\n");
+		// check if in [Min, Max]
+		else if (!(value >= Min && value <= Max)) printf("Zahl nicht zwischen %d und %d\n", Min, Max);
+		else finished = 1;
+
+		// clear input stream
+		while (ch != '\n') retVal = scanf("%c", &ch);
+
+		// repeat if not finished
+	} while (!finished);
+
+	// return user input
+	return value;
+}
+
+void abschnlussnote(struct Fach* faecher, int count)
+{
+	int summe = 0;
+	int summeGewichtung = 0; 
+	float abschlussnote = 0;
+
+	for (int i = 0; i < count; i++)
+	{
+		summe += faecher[i].note; 
+		summeGewichtung += faecher[i].note * faecher[i].gewichtung;
+	}
+
+	abschlussnote = summeGewichtung / summe;
+
+	char* notentext;
+	if (abschlussnote == 15)        //Printing how good you are
+	{
+		notentext = "ausgezeichnet";
+	}
+	else if (abschlussnote == 14 || abschlussnote == 13) {
+		notentext = "sehr gut";
+	}
+	else if (abschlussnote < 13 && abschlussnote > 9)
+	{
+		notentext = "gut";
+	}
+	else if (abschlussnote < 10 && abschlussnote > 6)
+	{
+		notentext = "befriedigend";
+	}
+	else if (abschlussnote < 7 && abschlussnote > 4)
+	{
+		notentext = "ausreichend";
+	}
+	else
+	{
+		notentext = "nicht ausreichend";
+	}
+
+	printf("\n\nNotensumme: %d\nAbschlussnote: %.3f %s", summe, abschlussnote, notentext);
+}
+
+
+int main() 
+{
+	struct Fach temp;
+	struct Fach* fach = malloc(sizeof(temp));
+
+	int count = 1;
+
+	FILE* readPointer;
+
+	readPointer = fopen("module.csv", "r");
+
+	if (readPointer == NULL)
+	{
+		printf("Fehler beim oeffnen der Datei module.csv\n");
+		return 1;
+	}
+	char zeile[255];
+
+	fgets(zeile, 255, readPointer);
+
+	while (fgets(zeile, 255, readPointer) != NULL)
+	{
+		fach = realloc(fach, sizeof(temp) * count);
+		char* token = strtok(zeile, ";");
+		strcpy(fach[count-1].Modulbezeichnung, token);
+		token = strtok(NULL, ";");
+		strcpy(fach[count-1].Abkuerzung, token);
+		token = strtok(NULL, ";");
+		fach[count-1].gewichtung = atoi(token);
+		token = strtok(NULL, ";");
+		fach[count-1].note = atoi(token);
+		count++;
+	}
+	count--;
+
+	drucken(fach, count);
+
+	for(int i = 0; i < count; i++)
+	{
+		fach[i].note = getShortMinMax(fach[i].Modulbezeichnung, 0, 15);	
+	}
+
+	drucken(fach, count);
+
+	abschnlussnote(fach, count);
+
+	FILE* writePointer;
+
+	writePointer = fopen("output.csv", "w");
+
+	if (writePointer == NULL)
+	{
+		printf("Fehler beim oeffnen der Datei output.csv\n");
+		return 1;
+	}
+	
+	printf("\n1:%i", fputs("Modul;Kuerzel;Gewichtung;Note\n", writePointer));
+
+	for (int i = 0; i < count; i++)
+	{
+		printf("loop:%i", i);
+		fputs(strcat(fach[i].Modulbezeichnung, ";"), writePointer);
+		fputs(strcat(fach[i].Abkuerzung, ";"), writePointer);
+		fputs(strcat(fach[i].gewichtung, ";"), writePointer);   //GEWICHTUNG UND NOTE ZU STRING und durchführen !! 
+		fputs(strcat(fach[i].note, ";"), writePointer);
+		fputs("\n", writePointer);
+	}
+	printf("\n2:%i", fclose(writePointer));
+}
