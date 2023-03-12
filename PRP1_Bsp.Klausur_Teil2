@@ -1,0 +1,105 @@
+//PRP1_Klausur_teil2
+//Chris Lucas Siewert
+//11.03.2023
+//Analyse von Energiedaten
+//Notwendige daten: energiewerte.txt
+
+#define _CRT_SECURE_NO_WARNINGS
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+
+struct Datum
+{
+	int tag;
+	int monat;
+	int jahr;
+	int stunden;
+	int minuten;
+};
+
+struct tEnergiewert
+{
+	float last;
+	float erzeugung;
+	float importe;
+	
+	struct Datum datum;
+};
+
+//Funktionen
+
+void energiewerteEinlesen(int anzahl, struct tEnergiewert* start)
+{
+	FILE* readPointer;
+
+	readPointer = fopen("energiewerte.txt","r");
+
+	if (readPointer == NULL)
+	{
+		printf("Fehler beim öffnen der Datei energiewerte.txt \n");
+		return 1;
+	}
+	char zeile[255];
+
+	fgets(zeile, 255, readPointer);
+
+	for (int i = 0;i < anzahl; i++)
+	{
+		if (fgets(zeile, 255, readPointer) == NULL)
+		{
+			printf("Fehler beim einlesen der Datei \n");
+
+		}
+		sscanf(zeile, "%d.%d.%d %d:%d;%f;%f;%f", &start[i].datum.tag, &start[i].datum.monat, &start[i].datum.jahr,
+			&start[i].datum.stunden, &start[i].datum.minuten, &start[i].last, &start[i].erzeugung, &start[i].importe);
+	}
+}
+
+struct tEnergiewert mittelwertBerechnen(int anzahl, struct tEnergiewert* start)
+{
+	struct tEnergiewert mittel;
+	float summeLast = 0;
+	float summeErzeugung = 0;
+	float summeImporte = 0;
+
+	for (int i = 0; i < anzahl; i++)
+	{
+		summeLast += start[i].last;
+		summeErzeugung += start[i].erzeugung;
+		summeImporte += start[i].importe;
+	}
+	mittel.datum = start[anzahl - 1].datum;
+
+	mittel.last = summeLast / anzahl;
+	mittel.erzeugung = summeErzeugung / anzahl;
+	mittel.importe = summeImporte / anzahl; 
+
+	return mittel;
+}
+
+int main( int argc, char *argv[])
+{
+	if (argc != 2)
+	{
+		printf("2 Argumente erwartet\n");
+
+		return 1;
+	}
+	if (!isdigit(*argv[1]))
+	{
+		printf("Argument ist keine Zahl\n");
+		
+		return 1;
+	}
+	struct tEnergiewert wert;
+	struct tEnergiewert* werte = malloc(sizeof(wert) * atoi(argv[1]));
+
+	energiewerteEinlesen(atoi(argv[1]), werte);
+
+	struct tEnergiewert mittel = mittelwertBerechnen(atoi(argv[1]), werte);
+
+	printf("Datum des letztes Wertes: %02d.%02d.%4d %02d:%02d\r\nMittelwert Last:%f\r\nMittelwert Erzeugung:%f\r\nMittelwert Importe:%f\r\n "
+		, mittel.datum.tag, mittel.datum.monat, mittel.datum.jahr, mittel.datum.stunden, mittel.datum.minuten, mittel.last, mittel.erzeugung, mittel.importe);
+}
